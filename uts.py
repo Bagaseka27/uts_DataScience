@@ -1,13 +1,17 @@
 from flask import Flask, render_template
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg') # WAJIB untuk server seperti PythonAnywhere agar tidak error GUI
 import matplotlib.pyplot as plt
 import os
 
 app = Flask(__name__)
 
-df = pd.read_csv("clean_data_sleep_health.csv")
+base_dir = os.path.abspath(os.path.dirname(__file__))
+csv_path = os.path.join(base_dir, "clean_data_sleep_health.csv")
+df = pd.read_csv(csv_path)
 
-IMAGE_FOLDER = "static/images"
+IMAGE_FOLDER = os.path.join(base_dir, "static", "images")
 if not os.path.exists(IMAGE_FOLDER):
     os.makedirs(IMAGE_FOLDER)
 
@@ -19,96 +23,63 @@ def save_plot(nama_file):
 
 @app.route('/')
 def index():
-    desc = df.describe().to_html()
+    desc = df.describe().to_html(classes='table table-striped')
 
-    # 2. Umur
+    # Buat 9 Grafik (Pastikan nama file sesuai dengan yang dipanggil di HTML)
+    
+    # 1. Age
     plt.figure()
-    df['Age'].hist()
-    plt.title("Distribusi Age")
-    plt.xlabel("Age")
-    plt.ylabel("Frekuensi")
-    plt.grid()
+    df['Age'].hist(color='#4c51bf')
+    plt.title("Distribusi Umur")
     save_plot("distribusi_umur.png")
 
-    # 3. Gender
+    # 2. Gender
     plt.figure()
-    df['Gender'].value_counts().plot.pie(autopct='%1.1f%%')
+    df['Gender'].value_counts().plot.pie(autopct='%1.1f%%', colors=['#4c51bf', '#00b4d8'])
     plt.title("Distribusi Gender")
-    plt.ylabel("")
     save_plot("gender.png")
 
-    # 4. Occupation
+    # 3. Occupation
     plt.figure()
-    df['Occupation'].value_counts().plot(kind='bar')
-    plt.title("Distribusi Occupation")
-    plt.xlabel("Occupation")
-    plt.ylabel("Jumlah")
+    df['Occupation'].value_counts().plot(kind='bar', color='#4c51bf')
+    plt.title("Distribusi Pekerjaan")
     plt.xticks(rotation=45)
-    plt.grid()
     save_plot("occupation.png")
 
-    # 5. Sleep Duration
+    # 4. Sleep Duration
     plt.figure()
-    df['Sleep Duration'].hist()
-    plt.title("Distribusi Sleep Duration")
-    plt.xlabel("Sleep Duration")
-    plt.ylabel("Frekuensi")
-    plt.grid()
+    df['Sleep Duration'].hist(color='#00b4d8')
+    plt.title("Durasi Tidur")
     save_plot("durasi_tidur.png")
 
-    # 6. Sleep Disorder
+    # 5. Sleep Disorder
     plt.figure()
     df['Sleep Disorder'].value_counts().plot.pie(autopct='%1.1f%%')
-    plt.title("Distribusi Sleep Disorder")
-    plt.ylabel("")
+    plt.title("Gangguan Tidur")
     save_plot("gangguan_tidur.png")
 
-    # 7. Age vs Sleep Duration
+    # 6. Age vs Sleep
     plt.figure()
-    plt.scatter(df['Age'], df['Sleep Duration'])
-    plt.title("Age vs Sleep Duration")
-    plt.xlabel("Age")
-    plt.ylabel("Sleep Duration")
-    plt.grid()
+    plt.scatter(df['Age'], df['Sleep Duration'], color='#4c51bf', alpha=0.5)
+    plt.title("Umur vs Durasi Tidur")
     save_plot("umur_vs_tidur.png")
 
-    # 8. Physical Activity Level vs Sleep Duration
+    # 7. Activity vs Sleep
     plt.figure()
-    plt.scatter(df['Physical Activity Level'], df['Sleep Duration'])
-    plt.title("Physical Activity Level vs Sleep Duration")
-    plt.xlabel("Physical Activity Level")
-    plt.ylabel("Sleep Duration")
-    plt.grid()
+    plt.scatter(df['Physical Activity Level'], df['Sleep Duration'], color='#00b4d8')
+    plt.title("Aktivitas vs Tidur")
     save_plot("aktivitas_vs_tidur.png")
 
-    # 9. Stress Level vs Sleep Duration
+    # 8. Stress vs Sleep
     plt.figure()
-    plt.scatter(df['Stress Level'], df['Sleep Duration'])
-    plt.title("Stress Level vs Sleep Duration")
-    plt.xlabel("Stress Level")
-    plt.ylabel("Sleep Duration")
-    plt.grid()
+    plt.scatter(df['Stress Level'], df['Sleep Duration'], color='#e53e3e')
+    plt.title("Stress vs Tidur")
     save_plot("stress_vs_tidur.png")
 
-    # 10. Quality of Sleep vs Sleep Duration
+    # 9. Quality vs Sleep
     plt.figure()
-    plt.scatter(df['Quality of Sleep'], df['Sleep Duration'])
-    plt.title("Quality of Sleep vs Sleep Duration")
-    plt.xlabel("Quality of Sleep")
-    plt.ylabel("Sleep Duration")
-    plt.grid()
+    plt.scatter(df['Quality of Sleep'], df['Sleep Duration'], color='#38a169')
+    plt.title("Kualitas vs Durasi Tidur")
     save_plot("kualitas_vs_tidur.png")
 
-    # 11. Age vs Physical Activity Level
-    plt.figure()
-    plt.scatter(df['Age'], df['Physical Activity Level'])
-    plt.title("Age vs Physical Activity Level")
-    plt.xlabel("Age")
-    plt.ylabel("Physical Activity Level")
-    plt.grid()
-    save_plot("umur_vs_aktivitas.png")
-
     return render_template("index.html", desc=desc)
-
-if __name__ == '__main__':
-    app.run(debug=True)
