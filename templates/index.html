@@ -1,90 +1,194 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UTS Dashboard Ilmu Data (Apa Adanya)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { 
-            background-color: #f4f7f6; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        }
-        .card { 
-            margin-bottom: 25px; 
-            box-shadow: 0 6px 12px rgba(0,0,0,0.08); 
-            border: none; 
-            border-radius: 10px; 
-        }
-        .card-header { 
-            background-color: #fff; 
-            border-bottom: 1px solid #eee; 
-            border-radius: 10px 10px 0 0; 
-            font-weight: bold; 
-            color: #333; 
-        }
-        .table-container { 
-            overflow-x: auto; 
-        }
-        .main-title { 
-            color: #2c3e50; 
-            font-weight: bold; 
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.05); 
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Dashboard Sleep Health</title>
+
+<style>
+    body{
+        margin:0;
+        font-family: "Segoe UI", sans-serif;
+        background:#f4f7fb;
+        color:#2c3e50;
+    }
+
+    header{
+        background:#1e3a8a;
+        color:white;
+        padding:18px;
+        text-align:center;
+    }
+
+    .identitas{
+        font-size:13px;
+        opacity:0.85;
+    }
+
+    .container{
+        width:92%;
+        margin:auto;
+        padding:20px 0;
+    }
+
+    /* CARD */
+    .card{
+        background:white;
+        border-radius:12px;
+        padding:12px;
+        box-shadow:0 4px 10px rgba(0,0,0,0.06);
+    }
+
+    h3{
+        font-size:14px;
+        margin:8px 0;
+        color:#1e3a8a;
+    }
+
+    img{
+        width:100%;
+        border-radius:8px;
+    }
+
+    /* ===== GRID DASHBOARD ===== */
+
+    .grid-kpi{
+        display:grid;
+        grid-template-columns: repeat(4,1fr);
+        gap:12px;
+        margin-bottom:18px;
+    }
+
+    .grid-2{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:12px;
+        margin-bottom:18px;
+    }
+
+    .grid-3{
+        display:grid;
+        grid-template-columns:1fr 1fr 1fr;
+        gap:12px;
+        margin-bottom:18px;
+    }
+
+    .full{
+        margin-bottom:18px;
+    }
+
+    /* TABLE CENTER */
+    .table-center{
+        text-align:center;
+    }
+
+    table{
+        margin:auto;
+        border-collapse:collapse;
+        font-size:12px;
+    }
+
+    th,td{
+        border:1px solid #ddd;
+        padding:6px;
+    }
+
+    th{
+        background:#e8f0ff;
+    }
+
+</style>
 </head>
+
 <body>
-    <div class="container py-5">
-        <h1 class="text-center mb-5 main-title">Dashboard Analisis Sleep Health & Lifestyle (Tanpa Cleaning)</h1>
 
-        <div class="card p-2">
-            <div class="card-header h5 py-3">1. Statistik Deskriptif (Data Asli)</div>
-            <div class="card-body">
-                <div class="table-container">
-                    {{ stats_table | safe }}
-                </div>
-                <p class="text-muted mt-3 small">*Statistik dihitung dari data apa adanya, data missing diabaikan.</p>
-            </div>
-        </div>
+<header>
+    <h2>Dashboard Sleep Health</h2>
+    <div class="identitas">
+        BAGAS EKA SAPUTRA 243107030034 <br>
+        NAUFALUDDIN SYAFIG RIFA'I 243107030010
+    </div>
+</header>
 
-        <div class="row mt-4">
-            <div class="col-md-12 mb-3">
-                <h3 class="mb-3 text-secondary">2. Visualisasi Informasi (Data Apa Adanya)</h3>
-            </div>
-            
-            <div class="col-md-6 mb-4">
-                <div class="card p-2">
-                    <div class="card-header text-center">Distribusi Durasi Tidur</div>
-                    <div class="card-body text-center">
-                        <img src="{{ url_for('static', filename='images/grafik_sleep_as_is.png') }}" class="img-fluid rounded" alt="Grafik Distribusi Tidur">
-                    </div>
-                </div>
-            </div>
+<div class="container">
 
-            <div class="col-md-6 mb-4">
-                <div class="card p-2">
-                    <div class="card-header text-center">Kualitas Tidur Berdasarkan Gender</div>
-                    <div class="card-body text-center">
-                        <img src="{{ url_for('static', filename='images/grafik_gender_as_is.png') }}" class="img-fluid rounded" alt="Grafik Kualitas Tidur">
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12 mb-4">
-                <div class="card p-2">
-                    <div class="card-header text-center">Hubungan Durasi Tidur dan Tekanan Darah (Melihat Outlier)</div>
-                    <div class="card-body text-center">
-                        <img src="{{ url_for('static', filename='images/grafik_scatter_as_is.png') }}" class="img-fluid rounded" alt="Scatter Plot Outlier">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-5">
-            <p class="text-muted">UTS Ilmu Data - Menampilkan data apa adanya (seadanya).</p>
-        </div>
+    <!-- STATISTIK -->
+    <div class="card table-center full">
+        <h3>Statistik Deskriptif</h3>
+        {{ desc | safe }}
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ROW 1 -->
+    <div class="grid-2">
+
+        <div class="card">
+            <h3>Distribusi Umur</h3>
+            <img src="{{ url_for('static', filename='images/distribusi_umur.png') }}">
+        </div>
+
+        <div class="card">
+            <h3>Distribusi Gender</h3>
+            <img src="{{ url_for('static', filename='images/gender.png') }}">
+        </div>
+
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="grid-2">
+
+        <div class="card">
+            <h3>Occupation</h3>
+            <img src="{{ url_for('static', filename='images/occupation.png') }}">
+        </div>
+
+        <div class="card">
+            <h3>Sleep Duration</h3>
+            <img src="{{ url_for('static', filename='images/durasi_tidur.png') }}">
+        </div>
+
+    </div>
+
+    <!-- ROW 3 (1 besar + 1 kecil) -->
+    <div class="grid-2">
+
+        <div class="card">
+            <h3>Age vs Sleep Duration</h3>
+            <img src="{{ url_for('static', filename='images/umur_vs_tidur.png') }}">
+        </div>
+
+        <div class="card">
+            <h3>Stress vs Sleep Duration</h3>
+            <img src="{{ url_for('static', filename='images/stress_vs_tidur.png') }}">
+        </div>
+
+    </div>
+
+    <!-- ROW 4 (3 scatter kecil) -->
+    <div class="grid-3">
+
+        <div class="card">
+            <h3>Physical Activity vs Sleep</h3>
+            <img src="{{ url_for('static', filename='images/aktivitas_vs_tidur.png') }}">
+        </div>
+
+        <div class="card">
+            <h3>Quality vs Sleep</h3>
+            <img src="{{ url_for('static', filename='images/kualitas_vs_tidur.png') }}">
+        </div>
+
+        <div class="card">
+            <h3>Age vs Activity</h3>
+            <img src="{{ url_for('static', filename='images/umur_vs_aktivitas.png') }}">
+        </div>
+
+    </div>
+
+    <!-- FULL WIDTH -->
+    <div class="card full">
+        <h3>Gangguan Tidur</h3>
+        <img src="{{ url_for('static', filename='images/gangguan_tidur.png') }}">
+    </div>
+
+</div>
+
 </body>
 </html>

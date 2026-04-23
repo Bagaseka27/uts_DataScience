@@ -5,77 +5,110 @@ import os
 
 app = Flask(__name__)
 
-# Memastikan folder static/images tersedia
-IMAGE_FOLDER = os.path.join('static', 'images')
+df = pd.read_csv("clean_data_sleep_health.csv")
+
+IMAGE_FOLDER = "static/images"
 if not os.path.exists(IMAGE_FOLDER):
     os.makedirs(IMAGE_FOLDER)
 
+def save_plot(nama_file):
+    path = os.path.join(IMAGE_FOLDER, nama_file)
+    plt.tight_layout()
+    plt.savefig(path)
+    plt.close()
+
 @app.route('/')
 def index():
-    # 1. Load Dataset (Poin 2 UTS)
-    # Ganti dengan nama file CSV kamu yang sebenarnya
-    dataset_name = 'sleep_health_and_lifestyle_dataset.csv' 
-    df = pd.read_csv(dataset_name)
+    desc = df.describe().to_html()
 
-    # =========================================================================
-    # --- BAGIAN DATA APA ADANYA ---
-    # Kita GUNAKAN DataFrame 'df' langsung, TANPA proses cleaning.
-    # Data missing dan outlier akan dibiarkan apa adanya.
-    # =========================================================================
+    # 2. Umur
+    plt.figure()
+    df['Age'].hist()
+    plt.title("Distribusi Age")
+    plt.xlabel("Age")
+    plt.ylabel("Frekuensi")
+    plt.grid()
+    save_plot("distribusi_umur.png")
 
-    # 2. Statistik Deskriptif (Poin 4 UTS) - Dari Data Apa Adanya
-    # Kita tampilkan statistik deskriptif dari data asli.
-    stats = df.describe().reset_index().to_html(classes='table table-hover table-bordered table-striped', index=False)
+    # 3. Gender
+    plt.figure()
+    df['Gender'].value_counts().plot.pie(autopct='%1.1f%%')
+    plt.title("Distribusi Gender")
+    plt.ylabel("")
+    save_plot("gender.png")
 
-    # 3. Visualisasi Data (Poin 5 UTS) - Dari Data Apa Adanya
-    # Matplotlib akan otomatis mengabaikan data missing (NaN) saat membuat grafik.
+    # 4. Occupation
+    plt.figure()
+    df['Occupation'].value_counts().plot(kind='bar')
+    plt.title("Distribusi Occupation")
+    plt.xlabel("Occupation")
+    plt.ylabel("Jumlah")
+    plt.xticks(rotation=45)
+    plt.grid()
+    save_plot("occupation.png")
 
-    # Grafik 1: Histogram Durasi Tidur (Sleep Duration)
-    plt.figure(figsize=(8, 5))
-    # Kita plot kolom 'Sleep Duration' apa adanya
-    plt.hist(df['Sleep Duration'].dropna(), bins=10, color='skyblue', edgecolor='black')
-    plt.title('Distribusi Durasi Tidur (Data Apa Adanya)')
-    plt.xlabel('Jam')
-    plt.ylabel('Frekuensi')
-    plt.grid(axis='y', alpha=0.5)
-    
-    # Simpan grafik
-    plot_sleep_path = os.path.join(IMAGE_FOLDER, 'grafik_sleep_as_is.png')
-    plt.savefig(plot_sleep_path)
-    plt.close()
+    # 5. Sleep Duration
+    plt.figure()
+    df['Sleep Duration'].hist()
+    plt.title("Distribusi Sleep Duration")
+    plt.xlabel("Sleep Duration")
+    plt.ylabel("Frekuensi")
+    plt.grid()
+    save_plot("durasi_tidur.png")
 
-    # Grafik 2: Bar Chart Rata-rata Kualitas Tidur per Gender
-    plt.figure(figsize=(8, 5))
-    # Kita hitung rata-rata apa adanya, data missing diabaikan
-    df_grouped_gender = df.groupby('Gender')['Quality of Sleep'].mean()
-    df_grouped_gender.plot(kind='bar', color=['pink', 'lightgreen'])
-    plt.title('Rata-rata Kualitas Tidur Berdasarkan Gender (Data Apa Adanya)')
-    plt.ylabel('Skor Kualitas (1-10)')
-    plt.xticks(rotation=0) # Agar tulisan 'Female', 'Male' tidak miring
-    plt.grid(axis='y', alpha=0.5)
+    # 6. Sleep Disorder
+    plt.figure()
+    df['Sleep Disorder'].value_counts().plot.pie(autopct='%1.1f%%')
+    plt.title("Distribusi Sleep Disorder")
+    plt.ylabel("")
+    save_plot("gangguan_tidur.png")
 
-    # Simpan grafik
-    plot_gender_path = os.path.join(IMAGE_FOLDER, 'grafik_gender_as_is.png')
-    plt.savefig(plot_gender_path)
-    plt.close()
+    # 7. Age vs Sleep Duration
+    plt.figure()
+    plt.scatter(df['Age'], df['Sleep Duration'])
+    plt.title("Age vs Sleep Duration")
+    plt.xlabel("Age")
+    plt.ylabel("Sleep Duration")
+    plt.grid()
+    save_plot("umur_vs_tidur.png")
 
-    # Grafik 3: Scatter Plot Tekanan Darah vs Durasi Tidur (Contoh visualisasi outlier)
-    # Ini bagus untuk melihat outlier secara visual
-    plt.figure(figsize=(8, 5))
-    # Kita plot kolom 'Blood Pressure' dan 'Sleep Duration' apa adanya
-    plt.scatter(df['Sleep Duration'], df['Blood Pressure'], color='purple', alpha=0.5)
-    plt.title('Scatter Plot: Durasi Tidur vs Tekanan Darah (Data Apa Adanya)')
-    plt.xlabel('Durasi Tidur (Jam)')
-    plt.ylabel('Tekanan Darah')
-    plt.grid(True, alpha=0.3)
+    # 8. Physical Activity Level vs Sleep Duration
+    plt.figure()
+    plt.scatter(df['Physical Activity Level'], df['Sleep Duration'])
+    plt.title("Physical Activity Level vs Sleep Duration")
+    plt.xlabel("Physical Activity Level")
+    plt.ylabel("Sleep Duration")
+    plt.grid()
+    save_plot("aktivitas_vs_tidur.png")
 
-    # Simpan grafik
-    plot_scatter_path = os.path.join(IMAGE_FOLDER, 'grafik_scatter_as_is.png')
-    plt.savefig(plot_scatter_path)
-    plt.close()
+    # 9. Stress Level vs Sleep Duration
+    plt.figure()
+    plt.scatter(df['Stress Level'], df['Sleep Duration'])
+    plt.title("Stress Level vs Sleep Duration")
+    plt.xlabel("Stress Level")
+    plt.ylabel("Sleep Duration")
+    plt.grid()
+    save_plot("stress_vs_tidur.png")
 
-    # Mengirim data ke template HTML
-    return render_template('index.html', stats_table=stats)
+    # 10. Quality of Sleep vs Sleep Duration
+    plt.figure()
+    plt.scatter(df['Quality of Sleep'], df['Sleep Duration'])
+    plt.title("Quality of Sleep vs Sleep Duration")
+    plt.xlabel("Quality of Sleep")
+    plt.ylabel("Sleep Duration")
+    plt.grid()
+    save_plot("kualitas_vs_tidur.png")
+
+    # 11. Age vs Physical Activity Level
+    plt.figure()
+    plt.scatter(df['Age'], df['Physical Activity Level'])
+    plt.title("Age vs Physical Activity Level")
+    plt.xlabel("Age")
+    plt.ylabel("Physical Activity Level")
+    plt.grid()
+    save_plot("umur_vs_aktivitas.png")
+
+    return render_template("index.html", desc=desc)
 
 if __name__ == '__main__':
     app.run(debug=True)
